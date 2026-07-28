@@ -1,7 +1,7 @@
 import { Router } from "express";
 import multer from "multer";
 import { getGeminiModel } from "../lib/gemini.js";
-import { getDbUser } from "../middleware/auth.js";
+import { ensureUser } from "../middleware/auth.js";
 import { serializeMoney, toNum } from "../lib/serialize.js";
 import {
   validateTransaction,
@@ -37,7 +37,7 @@ function calculateNextRecurringDate(startDate, interval) {
 router.post("/", async (req, res) => {
   try {
     const userId = req.auth.userId;
-    const user = await getDbUser(userId);
+    const user = await ensureUser(userId);
     if (!user) return res.status(404).json({ error: "User not found" });
 
     const { valid, errors, data } = validateTransaction(req.body);
@@ -143,7 +143,7 @@ router.post("/scan-receipt", upload.single("file"), async (req, res) => {
 
 router.delete("/", async (req, res) => {
   try {
-    const user = await getDbUser(req.auth.userId);
+    const user = await ensureUser(req.auth.userId);
     if (!user) return res.status(404).json({ error: "User not found" });
 
     const transactionIds = req.body.ids || [];
@@ -182,7 +182,7 @@ router.delete("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    const user = await getDbUser(req.auth.userId);
+    const user = await ensureUser(req.auth.userId);
     if (!user) return res.status(404).json({ error: "User not found" });
 
     const transaction = await db.transaction.findFirst({
@@ -202,7 +202,7 @@ router.get("/:id", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
   try {
-    const user = await getDbUser(req.auth.userId);
+    const user = await ensureUser(req.auth.userId);
     if (!user) return res.status(404).json({ error: "User not found" });
 
     const { valid, errors, data } = validateTransaction(req.body);

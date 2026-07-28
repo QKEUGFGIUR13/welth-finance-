@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getDbUser } from "../middleware/auth.js";
+import { ensureUser } from "../middleware/auth.js";
 import { serializeMoney } from "../lib/serialize.js";
 import { validateAccount, sendValidationError } from "../lib/validation.js";
 import { db } from "../lib/prisma.js";
@@ -8,7 +8,7 @@ const router = Router();
 
 router.get("/", async (req, res) => {
   try {
-    const user = await getDbUser(req.auth.userId);
+    const user = await ensureUser(req.auth.userId);
     if (!user) return res.status(404).json({ error: "User not found" });
 
     const accounts = await db.account.findMany({
@@ -29,7 +29,7 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const userId = req.auth.userId;
-    const user = await getDbUser(userId);
+    const user = await ensureUser(userId);
     if (!user) return res.status(404).json({ error: "User not found" });
 
     const { valid, errors, data } = validateAccount(req.body);
@@ -68,7 +68,7 @@ router.post("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    const user = await getDbUser(req.auth.userId);
+    const user = await ensureUser(req.auth.userId);
     if (!user) return res.status(404).json({ error: "User not found" });
 
     const account = await db.account.findFirst({
@@ -93,7 +93,7 @@ router.get("/:id", async (req, res) => {
 
 router.patch("/:id/default", async (req, res) => {
   try {
-    const user = await getDbUser(req.auth.userId);
+    const user = await ensureUser(req.auth.userId);
     if (!user) return res.status(404).json({ error: "User not found" });
 
     const existing = await db.account.findFirst({

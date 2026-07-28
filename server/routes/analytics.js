@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { getDbUser } from "../middleware/auth.js";
+import { ensureUser } from "../middleware/auth.js";
 import { getMonthlyAnalytics } from "../services/analytics.js";
 
 const router = Router();
 
 router.get("/", async (req, res) => {
   try {
-    const user = await getDbUser(req.auth.userId);
+    const user = await ensureUser(req.auth.userId);
     if (!user) return res.status(404).json({ error: "User not found" });
 
     const analytics = await getMonthlyAnalytics(user.id, {

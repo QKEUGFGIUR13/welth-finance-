@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getDbUser } from "../middleware/auth.js";
+import { ensureUser } from "../middleware/auth.js";
 import { toNum } from "../lib/serialize.js";
 import { validateBudget, sendValidationError } from "../lib/validation.js";
 import { db } from "../lib/prisma.js";
@@ -11,7 +11,7 @@ const WARNING_THRESHOLD = 80;
 
 router.get("/", async (req, res) => {
   try {
-    const user = await getDbUser(req.auth.userId);
+    const user = await ensureUser(req.auth.userId);
     if (!user) return res.status(404).json({ error: "User not found" });
 
     const accountId = req.query.accountId;
@@ -63,7 +63,7 @@ router.get("/", async (req, res) => {
 
 router.put("/", async (req, res) => {
   try {
-    const user = await getDbUser(req.auth.userId);
+    const user = await ensureUser(req.auth.userId);
     if (!user) return res.status(404).json({ error: "User not found" });
 
     const { valid, errors, data } = validateBudget(req.body);
