@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  clerkUserId  String        @unique
+  email        String        @unique
+  name         String?
+  imageUrl     String?
+  transactions Transaction[]
+  accounts     Account[]
+  budgets      Budget[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@map("users")
+}
+
+model Account {
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  type         AccountType
+  balance      Float         @default(0)
+  isDefault    Boolean       @default(false)
+  userId       String        @db.ObjectId
+  user         User          @relation(fields: [userId], references: [id])
+  transactions Transaction[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Transaction {
+  id                String             @id @default(auto()) @map("_id") @db.ObjectId
+  type              TransactionType
+  amount            Float
+  description       String?
+  date              DateTime
+  category          String
+  receiptUrl        String?
+  isRecurring       Boolean            @default(false)
+  recurringInterval RecurringInterval?
+  nextRecurringDate DateTime?
+  lastProcessed     DateTime?
+  status            TransactionStatus  @default(COMPLETED)
+  userId            String             @db.ObjectId
+  user              User               @relation(fields: [userId], references: [id])
+  accountId         String             @db.ObjectId
+  account           Account            @relation(fields: [accountId], references: [id])
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  @@index([userId])
+  @@index([accountId])
+  @@map("transactions")
+}
+
+model Budget {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  amount        Float
+  lastAlertSent DateTime?
+  userId        String    @unique @db.ObjectId
+  user          User      @relation(fields: [userId], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("budgets")
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum AccountType {
+  CURRENT
+  SAVINGS
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum RecurringInterval {
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+}

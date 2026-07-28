@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+@layer base {
+  :root {
+    /* Cool forest ledger — teal ink on mist */
+    --background: 150 25% 97%;
+    --foreground: 160 35% 9%;
+    --ink: 160 40% 8%;
+    --mist: 150 28% 94%;
+    --pine: 168 58% 28%;
+    --card: 0 0% 100%;
+    --card-foreground: 160 35% 9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 160 35% 9%;
+    --primary: 168 58% 28%;
+    --primary-foreground: 150 40% 98%;
+    --secondary: 150 20% 92%;
+    --secondary-foreground: 160 35% 12%;
+    --muted: 150 18% 93%;
+    --muted-foreground: 160 10% 40%;
+    --accent: 168 40% 90%;
+    --accent-foreground: 168 58% 22%;
+    --destructive: 4 72% 48%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 150 14% 86%;
+    --input: 150 14% 86%;
+    --ring: 168 58% 28%;
+    --chart-1: 168 58% 34%;
+    --chart-2: 190 45% 42%;
+    --chart-3: 145 35% 38%;
+    --chart-4: 35 70% 52%;
+    --chart-5: 200 30% 45%;
+    --radius: 0.55rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 10% -10%, hsl(168 40% 88% / 0.55), transparent),
+      radial-gradient(ellipse 60% 40% at 100% 0%, hsl(150 30% 90% / 0.5), transparent),
+      linear-gradient(180deg, hsl(150 25% 97%) 0%, hsl(150 20% 95%) 100%);
+    background-attachment: fixed;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: "Space Grotesk", sans-serif;
+  }
+
+  .gradient-title {
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: hsl(var(--ink));
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .surface-grid {
+    background-image:
+      linear-gradient(hsl(160 20% 20% / 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(160 20% 20% / 0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+}
+
+.hero-scrub {
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.hero-scrub.is-scrolled {
+  transform: scale(1.04);
+}
