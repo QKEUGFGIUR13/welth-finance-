@@ -27,6 +27,10 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const isProd = process.env.NODE_ENV === "production";
 
+// On Vercel the frontend is served by the CDN and this app runs as a function,
+// so it must not bind a port or serve the build output itself.
+const isServerless = Boolean(process.env.VERCEL);
+
 app.use(
   cors({
     origin: isProd ? false : ["http://localhost:5173", "http://127.0.0.1:5173"],
@@ -69,7 +73,7 @@ app.use("/api/dashboard", requireUserId, dashboardRouter);
 app.use("/api/analytics", requireUserId, analyticsRouter);
 app.use("/api/insights", requireUserId, insightsRouter);
 
-if (isProd) {
+if (isProd && !isServerless) {
   const distPath = path.join(__dirname, "..", "dist");
   app.use(express.static(distPath));
   app.get("*", (_req, res) => {
@@ -82,6 +86,10 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ error: err.message || "Internal server error" });
 });
 
-app.listen(PORT, () => {
-  console.log(`API server listening on http://localhost:${PORT}`);
-});
+if (!isServerless) {
+  app.listen(PORT, () => {
+    console.log(`API server listening on http://localhost:${PORT}`);
+  });
+}
+
+export default app;

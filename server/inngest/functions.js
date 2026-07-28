@@ -1,6 +1,6 @@
 import { inngest } from "./client.js";
 import { db } from "../lib/prisma.js";
-import EmailTemplate from "../../emails/template.jsx";
+import EmailTemplate from "../../emails/template.js";
 import { sendEmail } from "../services/email.js";
 import { getGeminiModel } from "../lib/gemini.js";
 import { toNum } from "../lib/serialize.js";
